@@ -14,7 +14,7 @@ import { PaginaOportunidadesPublica } from './components/PaginaOportunidadesPubl
 import { PaginaCertificadosPublica } from './components/PaginaCertificadosPublica';
 import { PaginaSobre } from './components/PaginaSobre';
 import { PaginaDetalhesOportunidadePublica } from './components/PaginaDetalhesOportunidadePublica';
-import { Toaster } from './components/ui/sonner';
+// import { Toaster } from './components/ui/sonner';
 
 export type UserRole = 'discente' | 'coordenador' | 'docente' | 'admin';
 
@@ -202,7 +202,7 @@ export default function App() {
         />
       )}
       
-      <Toaster />
+      {/* <Toaster /> */}
     </div>
   );
 }

@@ -16,7 +16,7 @@ interface PaginaSobreProps {
   onLoginClick?: () => void;
 }
 
-export function PaginaSobre({ onLoginClick }: PaginaSobreProps = {}) {
+export function PaginaSobre({ onLoginClick }: PaginaSobreProps) {
   const estatisticas = [
     { label: 'Oportunidades Ativas', valor: '127', icon: BookOpenIcon, cor: 'teal' },
     { label: 'Participantes', valor: '2.847', icon: UsersIcon, cor: 'blue' },

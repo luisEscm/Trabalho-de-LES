@@ -1,0 +1,40 @@
+# Logs do sistema e npm
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependências (Nunca envie isso para o Git!)
+node_modules
+.pnpm-store
+
+# Pastas de Build (Produção)
+dist
+dist-ssr
+# O seu vite.config.ts está configurado para gerar a pasta 'build', então ignoramos ela:
+build
+*.local
+
+# Configurações de Editor (Opcional, mas recomendado)
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs
+*.njsproj
+*.sln
+*.sw?
+
+# Variáveis de Ambiente (SEGURANÇA CRÍTICA)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Arquivos temporários do TypeScript
+*.tsbuildinfo
