@@ -14,7 +14,6 @@ interface DashboardDocenteProps {
 }
 
 export function DashboardDocente({ user }: DashboardDocenteProps) {
-  // Dados mockados para demonstração
   const minhasOportunidades = 3;
   const totalParticipantes = 63;
   const horasGeradas = 420;
@@ -34,7 +33,7 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
   ];
 
   const statusOportunidades = [
-    { name: 'Em Andamento', value: 2, color: '#0d9488' },
+    { name: 'Em Andamento', value: 2, color: '#9e1e22' },
     { name: 'Concluídas', value: 5, color: '#16a34a' },
     { name: 'Planejadas', value: 1, color: '#eab308' },
   ];
@@ -103,13 +102,11 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
       <div>
         <h2 className="text-gray-900">Painel do Docente</h2>
         <p className="text-gray-600 mt-1">Bem-vindo(a), {user.nome}</p>
       </div>
 
-      {/* Cards de Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
@@ -164,9 +161,7 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
         </div>
       </div>
 
-      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Distribuição por Atividade */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Participantes por Atividade</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -175,12 +170,11 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
               <XAxis dataKey="tipo" angle={-15} textAnchor="end" height={80} fontSize={12} />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="participantes" fill="#0d9488" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="participantes" fill="#9e1e22" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Evolução de Participação */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Evolução de Participação</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -189,12 +183,11 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
               <XAxis dataKey="mes" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="participantes" stroke="#0d9488" strokeWidth={2} />
+              <Line type="monotone" dataKey="participantes" stroke="#9e1e22" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Status das Oportunidades */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Status das Oportunidades</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -219,7 +212,6 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
         </div>
       </div>
 
-      {/* Minhas Atividades */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 border-b border-gray-200">
           <h3 className="text-gray-900">Minhas Atividades de Extensão</h3>
@@ -315,9 +307,7 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
         </div>
       </div>
 
-      {/* Grid: Grupos Acadêmicos e Participantes Destaque */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Grupos Acadêmicos */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-gray-900 flex items-center gap-2">
@@ -363,7 +353,6 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
           </div>
         </div>
 
-        {/* Participantes Destaque */}
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b border-gray-200">
             <h3 className="text-gray-900 flex items-center gap-2">
@@ -396,7 +385,6 @@ export function DashboardDocente({ user }: DashboardDocenteProps) {
         </div>
       </div>
 
-      {/* Informação sobre perfil */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex gap-3">
           <BookOpenIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />

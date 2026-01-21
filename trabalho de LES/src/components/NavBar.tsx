@@ -44,9 +44,8 @@ export function NavBar({ user, currentView, onViewChange, onLogout, onNotificati
     <nav className="bg-white shadow-md border-b border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo e Título */}
           <div className="flex items-center gap-3">
-            <div className="bg-teal-600 p-2 rounded-lg">
+            <div className="bg-teal-600 p-2 rounded-lg shadow-sm">
               <AcademicCapIcon className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -61,7 +60,6 @@ export function NavBar({ user, currentView, onViewChange, onLogout, onNotificati
             </div>
           </div>
 
-          {/* Menu Desktop */}
           <div className="hidden md:flex items-center gap-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -82,7 +80,6 @@ export function NavBar({ user, currentView, onViewChange, onLogout, onNotificati
             })}
           </div>
 
-          {/* Ações */}
           <div className="flex items-center gap-2">
             <button
               onClick={onNotificationsClick}
@@ -102,7 +99,6 @@ export function NavBar({ user, currentView, onViewChange, onLogout, onNotificati
               <span className="text-sm hidden sm:inline">Sair</span>
             </button>
 
-            {/* Botão Mobile */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
@@ -112,7 +108,6 @@ export function NavBar({ user, currentView, onViewChange, onLogout, onNotificati
           </div>
         </div>
 
-        {/* Menu Mobile */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             {menuItems.map((item) => {

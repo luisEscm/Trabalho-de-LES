@@ -14,7 +14,6 @@ interface DashboardCoordenadorProps {
 }
 
 export function DashboardCoordenador({ user }: DashboardCoordenadorProps) {
-  // Dados mockados para demonstração
   const totalAlunos = 450;
   const alunosComHoras = 320;
   const alunosEmRisco = 85;
@@ -50,13 +49,11 @@ export function DashboardCoordenador({ user }: DashboardCoordenadorProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
       <div>
         <h2 className="text-gray-900">Painel de Coordenação</h2>
         <p className="text-gray-600 mt-1">Indicadores e métricas do curso</p>
       </div>
 
-      {/* Cards de Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
@@ -111,9 +108,7 @@ export function DashboardCoordenador({ user }: DashboardCoordenadorProps) {
         </div>
       </div>
 
-      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Distribuição de Horas */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Distribuição de Carga Horária</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -122,12 +117,11 @@ export function DashboardCoordenador({ user }: DashboardCoordenadorProps) {
               <XAxis dataKey="faixa" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="quantidade" fill="#0d9488" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="quantidade" fill="#9e1e22" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Evolução Semestral */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Evolução de Concluintes</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -138,13 +132,12 @@ export function DashboardCoordenador({ user }: DashboardCoordenadorProps) {
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="concluidos" stroke="#16a34a" name="Concluídos" strokeWidth={2} />
-              <Line type="monotone" dataKey="total" stroke="#0d9488" name="Total" strokeWidth={2} />
+              <Line type="monotone" dataKey="total" stroke="#9e1e22" name="Total" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Solicitações Pendentes */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 border-b border-gray-200 flex items-center justify-between">
           <div>
@@ -208,7 +201,6 @@ export function DashboardCoordenador({ user }: DashboardCoordenadorProps) {
         </div>
       </div>
 
-      {/* Oportunidades Ativas */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 border-b border-gray-200">
           <h3 className="text-gray-900">Oportunidades Ativas</h3>

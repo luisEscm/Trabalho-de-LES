@@ -14,7 +14,6 @@ interface DashboardDiscenteProps {
 }
 
 export function DashboardDiscente({ user }: DashboardDiscenteProps) {
-  // Dados mockados para demonstração
   const horasConcluidas = 85;
   const horasPendentes = 15;
   const horasNecessarias = 120;
@@ -43,13 +42,11 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cabeçalho */}
       <div>
         <h2 className="text-gray-900">Meu Painel de Extensão</h2>
         <p className="text-gray-600 mt-1">Acompanhe seu progresso e atividades extensionistas</p>
       </div>
 
-      {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
@@ -100,7 +97,6 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
         </div>
       </div>
 
-      {/* Barra de Progresso */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-gray-900">Progresso Geral</h3>
@@ -117,9 +113,7 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
         </p>
       </div>
 
-      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Horas por Semestre */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Horas por Semestre</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -128,12 +122,11 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
               <XAxis dataKey="semestre" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="horas" fill="#0d9488" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="horas" fill="#9e1e22" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Horas por Modalidade */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Distribuição por Modalidade</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -158,7 +151,6 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
         </div>
       </div>
 
-      {/* Histórico de Atividades */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 border-b border-gray-200">
           <h3 className="text-gray-900">Histórico de Atividades</h3>

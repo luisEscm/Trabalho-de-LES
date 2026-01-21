@@ -23,9 +23,8 @@ export function NavBarPublica({ currentView, onViewChange, onLoginClick }: NavBa
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo e Nome */}
           <div className="flex items-center gap-3">
-            <div className="bg-teal-600 p-2 rounded-lg">
+            <div className="bg-teal-600 p-2 rounded-lg shadow-sm">
               <AcademicCapIcon className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -34,7 +33,6 @@ export function NavBarPublica({ currentView, onViewChange, onLoginClick }: NavBa
             </div>
           </div>
 
-          {/* Menu de Navegação */}
           <div className="flex items-center gap-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -56,7 +54,6 @@ export function NavBarPublica({ currentView, onViewChange, onLoginClick }: NavBa
               );
             })}
             
-            {/* Botão de Login */}
             <button
               onClick={onLoginClick}
               className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors ml-2"
