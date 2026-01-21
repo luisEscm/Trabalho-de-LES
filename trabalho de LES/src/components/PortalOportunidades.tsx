@@ -24,6 +24,7 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 import { ModalConfirmacaoCriacao } from './ModalConfirmacaoCriacao';
+import { ModalGerenciarOportunidade } from './ModalGerenciarOportunidade';
 
 interface PortalOportunidadesProps {
   user: User;

@@ -35,7 +35,7 @@ interface Oportunidade {
   status: string;
 }
 
-export function PaginaOportunidadesPublica({ onLoginClick, onVerDetalhes }: PaginaOportunidadesPublicaProps) {
+export function PaginaOportunidadesPublica({ onLoginClick, onVerDetalhes }: PaginaOportunidadesPublicaProps = {}) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filtroModalidade, setFiltroModalidade] = useState<string>('Todas');
   const [filtroStatus, setFiltroStatus] = useState<string>('Todas');
