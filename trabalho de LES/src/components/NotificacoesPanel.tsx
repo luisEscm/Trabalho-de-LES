@@ -4,18 +4,10 @@ import {
   BellIcon, 
   CheckCircleIcon, 
   ExclamationCircleIcon, 
-  ClockIcon, 
-  TrophyIcon, 
-  DocumentTextIcon, 
-  UsersIcon 
+  ClockIcon 
 } from '@heroicons/react/24/outline';
 
-interface NotificacoesPanelProps {
-  user: User;
-  onClose: () => void;
-}
-
-interface Notificacao {
+export interface Notificacao {
   id: number;
   tipo: 'sucesso' | 'alerta' | 'info';
   titulo: string;
@@ -24,95 +16,14 @@ interface Notificacao {
   lida: boolean;
 }
 
-export function NotificacoesPanel({ user, onClose }: NotificacoesPanelProps) {
-  // Notificações mockadas
-  const notificacoesDiscente: Notificacao[] = [
-    {
-      id: 1,
-      tipo: 'sucesso',
-      titulo: 'Certificado Disponível',
-      mensagem: 'O certificado do "Desenvolvimento Web para ONGs" está disponível para download.',
-      data: '30/11/2024 14:30',
-      lida: false
-    },
-    {
-      id: 2,
-      tipo: 'alerta',
-      titulo: 'Solicitação Indeferida',
-      mensagem: 'Sua solicitação de "Curso de Cloud Computing" foi indeferida. Você tem 5 dias para ajustar e reenviar.',
-      data: '29/11/2024 10:15',
-      lida: false
-    },
-    {
-      id: 3,
-      tipo: 'sucesso',
-      titulo: 'Inscrição Aprovada',
-      mensagem: 'Sua inscrição no "Hackathon de Inovação Social" foi aprovada!',
-      data: '28/11/2024 16:45',
-      lida: true
-    },
-    {
-      id: 4,
-      tipo: 'info',
-      titulo: 'Nova Oportunidade',
-      mensagem: 'Nova oportunidade disponível: "Programação Python para Jovens" - 30 vagas abertas.',
-      data: '27/11/2024 09:00',
-      lida: true
-    },
-    {
-      id: 5,
-      tipo: 'alerta',
-      titulo: 'Atenção ao Prazo',
-      mensagem: 'Faltam apenas 30 horas para completar sua meta de extensão deste semestre.',
-      data: '26/11/2024 11:20',
-      lida: true
-    }
-  ];
+interface NotificacoesPanelProps {
+  user: User;
+  onClose: () => void;
+  notificacoes: Notificacao[];
+}
 
-  const notificacoesCoordenacao: Notificacao[] = [
-    {
-      id: 1,
-      tipo: 'alerta',
-      titulo: 'Prazo Crítico',
-      mensagem: 'Solicitação de Pedro Oliveira vence em 2 dias. Análise pendente.',
-      data: '30/11/2024 15:00',
-      lida: false
-    },
-    {
-      id: 2,
-      tipo: 'info',
-      titulo: 'Nova Solicitação',
-      mensagem: 'Lucas Ferreira enviou uma nova solicitação de aproveitamento de 16 horas.',
-      data: '30/11/2024 13:20',
-      lida: false
-    },
-    {
-      id: 3,
-      tipo: 'info',
-      titulo: 'Nova Inscrição',
-      mensagem: 'Nova inscrição no "Projeto Saúde da Família" - 5 vagas restantes.',
-      data: '29/11/2024 14:30',
-      lida: false
-    },
-    {
-      id: 4,
-      tipo: 'alerta',
-      titulo: 'Alunos em Risco',
-      mensagem: '85 alunos estão com menos de 50% da carga horária necessária.',
-      data: '28/11/2024 10:00',
-      lida: true
-    },
-    {
-      id: 5,
-      tipo: 'sucesso',
-      titulo: 'Meta Alcançada',
-      mensagem: '115 alunos completaram a carga horária mínima neste semestre.',
-      data: '27/11/2024 16:45',
-      lida: true
-    }
-  ];
+export function NotificacoesPanel({ user, onClose, notificacoes }: NotificacoesPanelProps) {
 
-  const notificacoes = user.role === 'discente' ? notificacoesDiscente : notificacoesCoordenacao;
   const naoLidas = notificacoes.filter(n => !n.lida).length;
 
   const getIcone = (tipo: string) => {
@@ -128,21 +39,8 @@ export function NotificacoesPanel({ user, onClose }: NotificacoesPanelProps) {
     }
   };
 
-  const getCor = (tipo: string) => {
-    switch (tipo) {
-      case 'sucesso':
-        return 'bg-green-50 border-green-200';
-      case 'alerta':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'info':
-        return 'bg-teal-50 border-teal-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
-  };
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-end">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-end">
       <div className="bg-white h-full w-full max-w-md shadow-xl overflow-hidden flex flex-col">
         {/* Cabeçalho */}
         <div className="bg-teal-600 text-white p-6">
@@ -160,13 +58,6 @@ export function NotificacoesPanel({ user, onClose }: NotificacoesPanelProps) {
           </div>
           <p className="text-teal-100 text-sm">
             {naoLidas} não {naoLidas === 1 ? 'lida' : 'lidas'}
-          </p>
-        </div>
-
-        {/* Informação */}
-        <div className="bg-teal-50 border-b border-teal-200 p-4">
-          <p className="text-teal-800 text-sm">
-            Sistema de notificações automáticas para eventos relevantes
           </p>
         </div>
 

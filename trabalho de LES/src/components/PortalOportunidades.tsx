@@ -1811,24 +1811,6 @@ export function PortalOportunidades({ user }: PortalOportunidadesProps) {
                     </div>
                   </div>
 
-                  {/* Avisos e Informações */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <div className="flex gap-3">
-                      <ExclamationCircleIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-blue-900 text-sm mb-2">
-                          Sobre a inscrição
-                        </p>
-                        <ul className="text-blue-800 text-sm space-y-1">
-                          <li>• Sua inscrição será enviada para aprovação do responsável</li>
-                          <li>• Você receberá uma notificação quando sua inscrição for analisada</li>
-                          <li>• As horas de extensão serão contabilizadas após a conclusão da atividade</li>
-                          <li>• Certifique-se de que pode cumprir o período e a carga horária</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Confirmação */}
                   <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <label className="flex items-start gap-3 cursor-pointer">
@@ -1888,23 +1870,6 @@ export function PortalOportunidades({ user }: PortalOportunidadesProps) {
                     <p className="text-gray-600 mb-8">
                       Aguarde o deferimento/indeferimento do responsável pela atividade
                     </p>
-
-                    {/* Informações Adicionais */}
-                    <div className="bg-teal-50 border border-teal-200 rounded-lg p-6 mb-6 text-left">
-                      <div className="flex items-start gap-3">
-                        <ExclamationCircleIcon className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-teal-900 text-sm mb-3">
-                            <strong>Próximos passos:</strong>
-                          </p>
-                          <ul className="text-teal-800 text-sm space-y-2">
-                            <li>• O responsável pela oportunidade foi notificado sobre sua solicitação</li>
-                            <li>• Você receberá uma notificação quando houver uma resposta</li>
-                            <li>• Acompanhe o status na aba "Minhas Solicitações"</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
 
                     {/* Card da Oportunidade */}
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 text-left">

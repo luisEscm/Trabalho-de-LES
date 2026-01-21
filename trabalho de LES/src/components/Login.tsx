@@ -79,10 +79,11 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     setErroLogin('');
     
     const user = usuariosMockados[email as keyof typeof usuariosMockados];
-    if (user) {
+    
+    if (user && senha === '1234') {
       onLogin(user);
     } else {
-      setErroLogin('E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.');
+      setErroLogin('E-mail ou senha incorretos.');
     }
   };
 
@@ -127,7 +128,7 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     setErroRecuperacao('');
 
     // Validar email institucional
-    if (!emailRecuperacao.endsWith('@instituicao.edu.br')) {
+    if (!emailRecuperacao.endsWith('@discente.ufma.br')) {
       setErroRecuperacao('Por favor, utilize um e-mail institucional válido.');
       return;
     }

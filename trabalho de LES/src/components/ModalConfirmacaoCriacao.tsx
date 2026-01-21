@@ -165,53 +165,6 @@ export function ModalConfirmacaoCriacao({ tipo, titulo, onClose }: ModalConfirma
             )}
           </div>
 
-          {/* Avisos e Informações */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex gap-3">
-              <ExclamationCircleIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-blue-900 text-sm mb-2">
-                  <strong>{tipo === 'oportunidade' ? 'Sobre a oportunidade' : 'Próximos passos'}</strong>
-                </p>
-                {tipo === 'oportunidade' ? (
-                  <ul className="text-blue-800 text-sm space-y-1">
-                    <li>• A oportunidade está disponível imediatamente no Portal</li>
-                    <li>• Discentes podem se inscrever e você receberá notificações</li>
-                    <li>• Você pode aprovar/reprovar inscrições na aba "Gerenciar"</li>
-                    <li>• Certificados serão gerados automaticamente após conclusão</li>
-                  </ul>
-                ) : (
-                  <ul className="text-blue-800 text-sm space-y-1">
-                    <li>• A coordenação foi notificada sobre sua solicitação</li>
-                    <li>• Você receberá uma notificação quando houver uma análise</li>
-                    <li>• O prazo de análise é de até 10 dias úteis</li>
-                    <li>• Após aprovação, o discente líder poderá gerenciar membros e atividades</li>
-                  </ul>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Dica */}
-          <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-6">
-            <div className="flex gap-3">
-              <div className="bg-teal-100 p-2 rounded-lg self-start">
-                <Cog6ToothIcon className="w-4 h-4 text-teal-600" />
-              </div>
-              <div>
-                <p className="text-teal-900 text-sm mb-1">
-                  <strong>Dica:</strong>
-                </p>
-                <p className="text-teal-800 text-sm">
-                  {tipo === 'grupo' 
-                    ? 'Enquanto aguarda a aprovação, você pode começar a planejar as primeiras atividades do grupo e preparar materiais de divulgação.'
-                    : 'Você pode começar a divulgar a oportunidade para seus alunos. As inscrições já estão abertas!'
-                  }
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Botão */}
           <button
             onClick={onClose}

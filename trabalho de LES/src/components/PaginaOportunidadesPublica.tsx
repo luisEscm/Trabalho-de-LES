@@ -389,15 +389,6 @@ export function PaginaOportunidadesPublica({ onLoginClick, onVerDetalhes }: Pagi
         </div>
       )}
 
-      {/* Informações sobre o Portal */}
-      <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
-        <h3 className="text-teal-900 mb-3">Sobre o Portal de Oportunidades</h3>
-        <div className="space-y-2 text-teal-800 text-sm">
-          <p><strong>Portal Público:</strong> Catálogo de todas as oportunidades de extensão disponíveis</p>
-          <p><strong>Inscrição:</strong> Para se inscrever em uma oportunidade, é necessário fazer login ou criar uma conta</p>
-          <p><strong>Importante:</strong> Todas as oportunidades exibidas já foram aprovadas pela coordenação de extensão</p>
-        </div>
-      </div>
     </div>
   );
 }

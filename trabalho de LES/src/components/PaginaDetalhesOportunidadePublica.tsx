@@ -117,17 +117,6 @@ export function PaginaDetalhesOportunidadePublica({
               {oportunidade.descricao}
             </p>
           </div>
-
-          {/* Informações sobre Inscrição */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h3 className="text-blue-900 mb-3">Como se Inscrever</h3>
-            <div className="space-y-2 text-blue-800 text-sm">
-              <p>• <strong>Passo 1:</strong> Faça login no sistema ou crie uma conta caso ainda não tenha</p>
-              <p>• <strong>Passo 2:</strong> Acesse o Portal de Oportunidades na área autenticada</p>
-              <p>• <strong>Passo 3:</strong> Encontre esta oportunidade e clique em "Inscrever-se"</p>
-              <p>• <strong>Passo 4:</strong> Aguarde a confirmação da sua inscrição</p>
-            </div>
-          </div>
         </div>
 
         {/* Coluna Lateral - Informações */}
