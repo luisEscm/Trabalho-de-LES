@@ -14,7 +14,7 @@ import { PaginaOportunidadesPublica } from './components/PaginaOportunidadesPubl
 import { PaginaCertificadosPublica } from './components/PaginaCertificadosPublica';
 import { PaginaSobre } from './components/PaginaSobre';
 import { PaginaDetalhesOportunidadePublica } from './components/PaginaDetalhesOportunidadePublica';
-// import { Toaster } from './components/ui/sonner';
+import { Toaster } from './components/ui/sonner';
 
 export type UserRole = 'discente' | 'coordenador' | 'docente' | 'admin';
 
@@ -40,17 +40,23 @@ interface OportunidadePublica {
   status: string;
 }
 
+// Interface para parâmetros de navegação
+interface NavigationParams {
+  groupId?: number;
+  tab?: string;
+}
+
 type VisualizacaoMode = 'publica' | 'login' | 'autenticado';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<string>('oportunidades');
+  const [viewParams, setViewParams] = useState<NavigationParams | undefined>(undefined);
   const [showNotifications, setShowNotifications] = useState(false);
   const [visualizacaoMode, setVisualizacaoMode] = useState<VisualizacaoMode>('publica');
   const [oportunidadeSelecionada, setOportunidadeSelecionada] = useState<OportunidadePublica | null>(null);
   
-  // Novos estados para notificações
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  // Estado para notificações
   const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
 
   // Dados mockados de notificações
@@ -145,7 +151,6 @@ export default function App() {
     if (user) {
       const listaInicial = user.role === 'discente' ? notificacoesDiscente : notificacoesCoordenacao;
       setNotificacoes(listaInicial);
-      setHasUnreadNotifications(listaInicial.some(n => !n.lida));
     }
   }, [user]);
 
@@ -161,15 +166,20 @@ export default function App() {
       // Se estava aberto e vai fechar, marca como lidas
       handleCloseNotifications();
     } else {
-      // Se vai abrir, apenas remove a bolinha global da NavBar
       setShowNotifications(true);
-      setHasUnreadNotifications(false);
+    }
+  };
+
+  // Função de navegação avançada
+  const handleNavigate = (view: string, params?: NavigationParams) => {
+    setCurrentView(view);
+    if (params) {
+      setViewParams(params);
     }
   };
 
   // Renderizar área pública
   if (visualizacaoMode === 'publica') {
-    // Se há uma oportunidade selecionada, mostrar a página de detalhes
     if (oportunidadeSelecionada) {
       return (
         <div className="min-h-screen bg-gray-50">
@@ -177,7 +187,7 @@ export default function App() {
             currentView={currentView}
             onViewChange={(view) => {
               setCurrentView(view);
-              setOportunidadeSelecionada(null); // Limpa a oportunidade selecionada ao mudar de página
+              setOportunidadeSelecionada(null);
             }}
             onLoginClick={() => setVisualizacaoMode('login')}
           />
@@ -190,7 +200,6 @@ export default function App() {
             />
           </main>
 
-          {/* Footer */}
           <footer className="bg-white border-t border-gray-200 mt-12">
             <div className="container mx-auto px-4 py-6">
               <div className="text-center text-gray-600 text-sm">
@@ -238,7 +247,6 @@ export default function App() {
           {renderPublicView()}
         </main>
 
-        {/* Footer */}
         <footer className="bg-white border-t border-gray-200 mt-12">
           <div className="container mx-auto px-4 py-6">
             <div className="text-center text-gray-600 text-sm">
@@ -270,7 +278,7 @@ export default function App() {
     switch (currentView) {
       case 'dashboard':
         if (user.role === 'discente') {
-          return <DashboardDiscente user={user} />;
+          return <DashboardDiscente user={user} onNavigate={handleNavigate} />;
         } else if (user.role === 'docente') {
           return <DashboardDocente user={user} />;
         } else {
@@ -283,10 +291,10 @@ export default function App() {
       case 'certificados':
         return <Certificados user={user} />;
       case 'comunidade':
-        return <Comunidade user={user} />;
+        return <Comunidade user={user} initialGroupId={viewParams?.groupId} />;
       default:
         if (user.role === 'discente') {
-          return <DashboardDiscente user={user} />;
+          return <DashboardDiscente user={user} onNavigate={handleNavigate} />;
         } else if (user.role === 'docente') {
           return <DashboardDocente user={user} />;
         } else {
@@ -300,14 +308,17 @@ export default function App() {
       <NavBar
         user={user}
         currentView={currentView}
-        onViewChange={setCurrentView}
+        onViewChange={(view) => {
+          setCurrentView(view);
+          setViewParams(undefined);
+        }}
         onLogout={() => {
           setUser(null);
           setVisualizacaoMode('publica');
           setCurrentView('oportunidades');
         }}
         onNotificationsClick={handleToggleNotifications}
-        hasUnread={hasUnreadNotifications}
+        hasUnread={notificacoes.some(n => !n.lida)}
       />
       
       <main className="container mx-auto px-4 py-8">
@@ -322,7 +333,7 @@ export default function App() {
         />
       )}
       
-      {/* <Toaster /> */}
+      <Toaster />
     </div>
   );
 }

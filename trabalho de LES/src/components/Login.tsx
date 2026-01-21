@@ -25,7 +25,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
   const [erroLogin, setErroLogin] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-  // Estados do formulário de cadastro
   const [cadastroData, setCadastroData] = useState({
     nome: '',
     matricula: '',
@@ -37,7 +36,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
   const [mostrarSenhaCadastro, setMostrarSenhaCadastro] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
 
-  // Estados de recuperação de senha
   const [emailRecuperacao, setEmailRecuperacao] = useState('');
   const [codigoRecuperacao, setCodigoRecuperacao] = useState(['', '', '', '', '', '']);
   const [novaSenhaData, setNovaSenhaData] = useState({
@@ -49,13 +47,19 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
   const [mostrarConfirmarNovaSenha, setMostrarConfirmarNovaSenha] = useState(false);
   const [emailEnviado, setEmailEnviado] = useState(false);
 
-  // Usuários de demonstração
   const usuariosMockados: { [key: string]: User } = {
     'joao.silva@discente.ufma.br': {
       id: '1',
       nome: 'João Silva',
       email: 'joao.silva@discente.ufma.br',
       matricula: '20231001',
+      role: 'discente' as UserRole,
+    },
+    'ana.costa@discente.ufma.br': {
+      id: '4',
+      nome: 'Ana Costa',
+      email: 'ana.costa@discente.ufma.br',
+      matricula: '20231002',
       role: 'discente' as UserRole,
     },
     'maria.santos@coordenador.ufma.br': {
@@ -83,7 +87,7 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     if (user && senha === '1234') {
       onLogin(user);
     } else {
-      setErroLogin('E-mail ou senha incorretos.');
+      setErroLogin('E-mail ou senha incorretos. (Dica: A senha padrão é 1234)');
     }
   };
 
@@ -91,19 +95,16 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     e.preventDefault();
     setErroSenha('');
 
-    // Validar se as senhas coincidem
     if (cadastroData.senhaCadastro !== cadastroData.confirmarSenha) {
       setErroSenha('As senhas não coincidem. Por favor, verifique e tente novamente.');
       return;
     }
 
-    // Validar força da senha (mínimo 6 caracteres)
     if (cadastroData.senhaCadastro.length < 6) {
       setErroSenha('A senha deve ter no mínimo 6 caracteres.');
       return;
     }
 
-    // Se passou nas validações, prosseguir com o cadastro
     alert('Cadastro realizado com sucesso! Um código de validação foi enviado para seu e-mail institucional.');
     setTelaAtiva('login');
     setCadastroData({
@@ -127,13 +128,11 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     e.preventDefault();
     setErroRecuperacao('');
 
-    // Validar email institucional
-    if (!emailRecuperacao.endsWith('@discente.ufma.br')) {
+    if (!emailRecuperacao.endsWith('@instituicao.edu.br') && !emailRecuperacao.includes('@')) {
       setErroRecuperacao('Por favor, utilize um e-mail institucional válido.');
       return;
     }
 
-    // Simular envio de código
     setEmailEnviado(true);
     setTimeout(() => {
       setTelaAtiva('codigoRecuperacao');
@@ -147,7 +146,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     newCodigo[index] = value;
     setCodigoRecuperacao(newCodigo);
 
-    // Auto-focus no próximo campo
     if (value && index < 5) {
       const nextInput = document.getElementById(`codigo-${index + 1}`);
       nextInput?.focus();
@@ -170,7 +168,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
       return;
     }
 
-    // Simular validação (código correto: 123456)
     if (codigo === '123456') {
       setTelaAtiva('novaSenha');
       setErroRecuperacao('');
@@ -183,7 +180,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     e.preventDefault();
     setErroRecuperacao('');
 
-    // Validar senhas
     if (novaSenhaData.novaSenha.length < 6) {
       setErroRecuperacao('A senha deve ter no mínimo 6 caracteres.');
       return;
@@ -194,7 +190,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
       return;
     }
 
-    // Sucesso
     alert('Senha redefinida com sucesso! Você já pode fazer login com sua nova senha.');
     setTelaAtiva('login');
     setEmailRecuperacao('');
@@ -212,7 +207,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     setEmailEnviado(false);
   };
 
-  // Tela de Recuperação de Senha - Solicitar
   if (telaAtiva === 'recuperarSenha') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
@@ -294,7 +288,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     );
   }
 
-  // Tela de Recuperação de Senha - Código
   if (telaAtiva === 'codigoRecuperacao') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
@@ -383,7 +376,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
     );
   }
 
-  // Tela de Recuperação de Senha - Nova Senha
   if (telaAtiva === 'novaSenha') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
@@ -628,7 +620,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-600 to-teal-800 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-8">
-        {/* Botão Voltar para Área Pública */}
         {onVoltar && (
           <button
             onClick={onVoltar}
@@ -648,7 +639,6 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          {/* Mensagem de Erro */}
           {erroLogin && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
@@ -744,10 +734,13 @@ export function Login({ onLogin, onVoltar }: LoginProps) {
         </form>
 
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-600 mb-2">Demonstração - Use:</p>
-          <p className="text-xs text-gray-700">• joao.silva@discente.ufma.br (Discente)</p>
-          <p className="text-xs text-gray-700">• carlos.oliveira@docente.ufma.br (Docente)</p>
-          <p className="text-xs text-gray-700">• maria.santos@coordenador.ufma.br (Coordenador)</p>
+          <p className="text-xs text-gray-600 mb-2">Demonstração - Senha padrão: <strong>1234</strong></p>
+          <div className="grid grid-cols-1 gap-1">
+            <p className="text-xs text-gray-700"><strong>Líder (João):</strong> joao.silva@discente.ufma.br</p>
+            <p className="text-xs text-gray-700"><strong>Membro (Ana):</strong> ana.costa@discente.ufma.br</p>
+            <p className="text-xs text-gray-700"><strong>Docente:</strong> carlos.oliveira@docente.ufma.br</p>
+            <p className="text-xs text-gray-700"><strong>Coord:</strong> maria.santos@coordenador.ufma.br</p>
+          </div>
         </div>
       </div>
     </div>

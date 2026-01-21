@@ -5,15 +5,18 @@ import {
   CheckCircleIcon, 
   ExclamationCircleIcon, 
   CalendarIcon, 
-  TrophyIcon 
+  TrophyIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Button } from './ui/button';
 
 interface DashboardDiscenteProps {
   user: User;
+  onNavigate: (view: string, params?: any) => void;
 }
 
-export function DashboardDiscente({ user }: DashboardDiscenteProps) {
+export function DashboardDiscente({ user, onNavigate }: DashboardDiscenteProps) {
   const horasConcluidas = 85;
   const horasPendentes = 15;
   const horasNecessarias = 120;
@@ -38,15 +41,23 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
     { id: 4, titulo: 'Workshop de Segurança Digital', carga: 10, status: 'Concluída', data: '05/01/2024' },
   ];
 
+  // Grupos liderados (Mock visível apenas para o Líder João, ID 1)
+  const isLeader = user.id === '1';
+  const gruposLiderados = isLeader ? [
+    { id: 1, nome: 'Grupo de Estudos em Sustentabilidade', membros: 12, pendencias: 2 }
+  ] : [];
+
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 
   return (
     <div className="space-y-6">
+      {/* Cabeçalho */}
       <div>
         <h2 className="text-gray-900">Meu Painel de Extensão</h2>
-        <p className="text-gray-600 mt-1">Acompanhe seu progresso e atividades extensionistas</p>
+        <p className="text-gray-600 mt-1">Bem-vindo(a), {user.nome}. Acompanhe seu progresso.</p>
       </div>
 
+      {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
@@ -97,6 +108,40 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
         </div>
       </div>
 
+      {/* Card de Liderança Discente (Só aparece se tiver grupos liderados) */}
+      {gruposLiderados.length > 0 && (
+        <div className="bg-gradient-to-r from-teal-50 to-white border border-teal-200 rounded-lg p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-teal-600 p-2 rounded-lg">
+              <UsersIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-gray-900 font-bold">Liderança Discente</h3>
+              <p className="text-teal-700 text-sm">Você gerencia {gruposLiderados.length} grupo(s)</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             {gruposLiderados.map(grupo => (
+               <div key={grupo.id} className="bg-white p-4 rounded border border-gray-200 flex justify-between items-center">
+                  <div>
+                    <p className="font-semibold text-gray-800">{grupo.nome}</p>
+                    <p className="text-xs text-gray-500">{grupo.membros} membros ativos</p>
+                  </div>
+                  {/* Botão de Navegação para Gerenciar */}
+                  <Button 
+                    variant="link"
+                    className="text-teal-600 font-medium hover:text-teal-800"
+                    onClick={() => onNavigate('comunidade', { groupId: grupo.id })}
+                  >
+                    Gerenciar
+                  </Button>
+               </div>
+             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Barra de Progresso */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-gray-900">Progresso Geral</h3>
@@ -113,7 +158,9 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
         </p>
       </div>
 
+      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Horas por Semestre */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Horas por Semestre</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -127,6 +174,7 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
           </ResponsiveContainer>
         </div>
 
+        {/* Horas por Modalidade */}
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-900 mb-4">Distribuição por Modalidade</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -151,6 +199,7 @@ export function DashboardDiscente({ user }: DashboardDiscenteProps) {
         </div>
       </div>
 
+      {/* Histórico de Atividades */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-6 border-b border-gray-200">
           <h3 className="text-gray-900">Histórico de Atividades</h3>
