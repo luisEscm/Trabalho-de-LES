@@ -283,7 +283,7 @@ export function Certificados({ user }: CertificadosProps) {
         ))}
       </div>
 
-      {/* Informações sobre Certificação */}
+      {/* Informações sobre Certificação *}
       <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
         <h3 className="text-teal-900 mb-3">Sobre os Certificados</h3>
         <div className="space-y-2 text-teal-800 text-sm">
@@ -292,7 +292,7 @@ export function Certificados({ user }: CertificadosProps) {
           <p><strong>Validação Pública:</strong> Qualquer pessoa pode validar certificados através da página pública</p>
           <p><strong>Download:</strong> Certificados disponíveis para download em formato PDF</p>
         </div>
-      </div>
+      </div>*/}
     </div>
   );
 }

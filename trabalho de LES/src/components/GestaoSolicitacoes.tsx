@@ -1,5 +1,7 @@
 import { User } from '../App';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { Toaster } from './ui/sonner';
 import { 
   ArrowUpTrayIcon, 
   DocumentTextIcon, 
@@ -12,9 +14,21 @@ import {
   EyeIcon, 
   XMarkIcon 
 } from '@heroicons/react/24/outline';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './ui/alert-dialog';
 
 interface GestaoSolicitacoesProps {
   user: User;
+  solicitacoesCoordenacao: Solicitacao[];
+  onAtualizarSolicitacao?: (solicitacao: Solicitacao) => void;
+  onVerDetalhes?: (solicitacao: Solicitacao) => void;
 }
 
 type StatusSolicitacao = 'Pendente' | 'Aprovado' | 'Indeferido';
@@ -49,83 +63,23 @@ interface GrupoAcademico {
   motivoReprovacao?: string;
 }
 
-export function GestaoSolicitacoes({ user }: GestaoSolicitacoesProps) {
+export function GestaoSolicitacoes({ user, solicitacoesCoordenacao, onAtualizarSolicitacao, onVerDetalhes }: GestaoSolicitacoesProps) {
   const [showNovaSolicitacao, setShowNovaSolicitacao] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState<AbaAtiva>('aproveitamento');
   const [grupoSelecionado, setGrupoSelecionado] = useState<number | null>(null);
   const [parecerExpandido, setParecerExpandido] = useState<number | null>(null);
   const [solicitacaoReenvio, setSolicitacaoReenvio] = useState<Solicitacao | null>(null);
-
-  // Dados mockados
-  const solicitacoesDiscente: Solicitacao[] = [
-    {
-      id: 1,
-      aluno: 'João Silva',
-      atividade: 'Congresso Nacional de Medicina',
-      horasSolicitadas: 20,
-      dataEnvio: '25/11/2024',
-      status: 'Aprovado',
-      prazoRestante: 0,
-      anexo: 'certificado_congresso.pdf',
-      parecer: 'Atividade aprovada conforme regulamento.'
-    },
-    {
-      id: 2,
-      aluno: 'João Silva',
-      atividade: 'Workshop de Tecnologia em Saúde',
-      horasSolicitadas: 8,
-      dataEnvio: '28/11/2024',
-      status: 'Pendente',
-      prazoRestante: 7,
-      anexo: 'certificado_workshop.pdf'
-    },
-    {
-      id: 3,
-      aluno: 'João Silva',
-      atividade: 'Curso de Primeiros Socorros',
-      horasSolicitadas: 12,
-      dataEnvio: '20/11/2024',
-      status: 'Indeferido',
-      prazoRestante: 3,
-      anexo: 'certificado_curso.pdf',
-      parecer: 'Certificado não possui carga horária discriminada. Por favor, anexe documento complementar.'
-    }
-  ];
-
-  const solicitacoesCoordenacao: Solicitacao[] = [
-    {
-      id: 1,
-      aluno: 'Pedro Oliveira',
-      atividade: 'Congresso Nacional de Medicina',
-      horasSolicitadas: 20,
-      dataEnvio: '29/11/2024',
-      status: 'Pendente',
-      prazoRestante: 2,
-      anexo: 'certificado.pdf'
-    },
-    {
-      id: 2,
-      aluno: 'Julia Santos',
-      atividade: 'Workshop de Tecnologia',
-      horasSolicitadas: 8,
-      dataEnvio: '26/11/2024',
-      status: 'Pendente',
-      prazoRestante: 5,
-      anexo: 'certificado.pdf'
-    },
-    {
-      id: 3,
-      aluno: 'Lucas Ferreira',
-      atividade: 'Simpósio de Extensão',
-      horasSolicitadas: 16,
-      dataEnvio: '30/11/2024',
-      status: 'Pendente',
-      prazoRestante: 1,
-      anexo: 'certificado.pdf'
-    }
-  ];
-
-  const gruposAcademicos: GrupoAcademico[] = [
+  const [modalAprovaGrupo, setModalAprovaGrupo] = useState(false);
+  const [grupoParaAprovar, setGrupoParaAprovar] = useState<number | null>(null);
+  const [modalRejeicaoGrupo, setModalRejeicaoGrupo] = useState(false);
+  const [grupoParaRejeitar, setGrupoParaRejeitar] = useState<number | null>(null);
+  const [motivoRejeicao, setMotivoRejeicao] = useState('');
+  const [modalAprovaSolicitacao, setModalAprovaSolicitacao] = useState(false);
+  const [solicitacaoParaAprovar, setSolicitacaoParaAprovar] = useState<number | null>(null);
+  const [modalIndeferimentoSolicitacao, setModalIndeferimentoSolicitacao] = useState(false);
+  const [solicitacaoParaIndeferir, setSolicitacaoParaIndeferir] = useState<number | null>(null);
+  const [motivoIndeferimento, setMotivoIndeferimento] = useState('');
+  const [gruposAcademicos, setGruposAcademicos] = useState<GrupoAcademico[]>([
     {
       id: 1,
       nome: 'Liga de Saúde Mental Universitária',
@@ -171,6 +125,42 @@ export function GestaoSolicitacoes({ user }: GestaoSolicitacoesProps) {
       status: 'Pendente',
       dataCriacao: '08/12/2024'
     }
+  ]);
+
+  // Dados mockados
+  const solicitacoesDiscente: Solicitacao[] = [
+    {
+      id: 1,
+      aluno: 'João Silva',
+      atividade: 'Congresso Nacional de Medicina',
+      horasSolicitadas: 20,
+      dataEnvio: '25/11/2024',
+      status: 'Aprovado',
+      prazoRestante: 0,
+      anexo: 'certificado_congresso.pdf',
+      parecer: 'Atividade aprovada conforme regulamento.'
+    },
+    {
+      id: 2,
+      aluno: 'João Silva',
+      atividade: 'Workshop de Tecnologia em Saúde',
+      horasSolicitadas: 8,
+      dataEnvio: '28/11/2024',
+      status: 'Pendente',
+      prazoRestante: 7,
+      anexo: 'certificado_workshop.pdf'
+    },
+    {
+      id: 3,
+      aluno: 'João Silva',
+      atividade: 'Curso de Primeiros Socorros',
+      horasSolicitadas: 12,
+      dataEnvio: '20/11/2024',
+      status: 'Indeferido',
+      prazoRestante: 3,
+      anexo: 'certificado_curso.pdf',
+      parecer: 'Certificado não possui carga horária discriminada. Por favor, anexe documento complementar.'
+    }
   ];
 
   const getStatusIcon = (status: StatusSolicitacao | string) => {
@@ -198,18 +188,80 @@ export function GestaoSolicitacoes({ user }: GestaoSolicitacoesProps) {
   };
 
   const handleAprovarGrupo = (grupoId: number) => {
-    console.log('Aprovando grupo:', grupoId);
-    alert('Grupo aprovado com sucesso! O docente e o discente líder serão notificados.');
+    setGrupoParaAprovar(grupoId);
+    setModalAprovaGrupo(true);
   };
 
-  const handleReprovarGrupo = (grupoId: number) => {
-    const motivo = prompt('Informe o motivo da reprovação:');
-    if (motivo) {
-      console.log('Reprovando grupo:', grupoId, 'Motivo:', motivo);
-      alert('Grupo reprovado. O docente será notificado sobre o motivo.');
+  const confirmarAprovacaoGrupo = () => {
+    if (grupoParaAprovar) {
+      console.log('Aprovando grupo:', grupoParaAprovar);
+      // Remove o grupo da lista
+      setGruposAcademicos(gruposAcademicos.filter(g => g.id !== grupoParaAprovar));
+      setModalAprovaGrupo(false);
+      setGrupoParaAprovar(null);
+      toast.success('Grupo aprovado com sucesso! O docente e o discente líder foram notificados.');
     }
   };
 
+  const handleReprovarGrupo = (grupoId: number) => {
+    setGrupoParaRejeitar(grupoId);
+    setMotivoRejeicao('');
+    setModalRejeicaoGrupo(true);
+  };
+
+  const confirmarRejeicaoGrupo = () => {
+    if (grupoParaRejeitar && motivoRejeicao.trim()) {
+      console.log('Reprovando grupo:', grupoParaRejeitar, 'Motivo:', motivoRejeicao);
+      // Remove o grupo da lista
+      setGruposAcademicos(gruposAcademicos.filter(g => g.id !== grupoParaRejeitar));
+      setModalRejeicaoGrupo(false);
+      setGrupoParaRejeitar(null);
+      setMotivoRejeicao('');
+      toast.error('Grupo rejeitado. O docente foi notificado sobre o motivo.');
+    }
+  };
+
+  const handleAprovarSolicitacao = (solicitacaoId: number) => {
+    setSolicitacaoParaAprovar(solicitacaoId);
+    setModalAprovaSolicitacao(true);
+  };
+
+  const confirmarAprovacaoSolicitacao = () => {
+    if (solicitacaoParaAprovar) {
+      const solicitacao = solicitacoesCoordenacao.find(s => s.id === solicitacaoParaAprovar);
+      if (solicitacao) {
+        console.log('Aprovando solicitação:', solicitacaoParaAprovar);
+        // Atualiza o status da solicitação
+        const solicitacaoAtualizada = { ...solicitacao, status: 'Aprovado' as const };
+        onAtualizarSolicitacao?.(solicitacaoAtualizada);
+        setModalAprovaSolicitacao(false);
+        setSolicitacaoParaAprovar(null);
+        toast.success('Solicitação aprovada com sucesso! O discente foi notificado.');
+      }
+    }
+  };
+
+  const handleIndeferirSolicitacao = (solicitacaoId: number) => {
+    setSolicitacaoParaIndeferir(solicitacaoId);
+    setMotivoIndeferimento('');
+    setModalIndeferimentoSolicitacao(true);
+  };
+
+  const confirmarIndeferimentoSolicitacao = () => {
+    if (solicitacaoParaIndeferir && motivoIndeferimento.trim()) {
+      const solicitacao = solicitacoesCoordenacao.find(s => s.id === solicitacaoParaIndeferir);
+      if (solicitacao) {
+        console.log('Indeferindo solicitação:', solicitacaoParaIndeferir, 'Motivo:', motivoIndeferimento);
+        // Atualiza o status da solicitação
+        const solicitacaoAtualizada = { ...solicitacao, status: 'Indeferido' as const, parecer: motivoIndeferimento };
+        onAtualizarSolicitacao?.(solicitacaoAtualizada);
+        setModalIndeferimentoSolicitacao(false);
+        setSolicitacaoParaIndeferir(null);
+        setMotivoIndeferimento('');
+        toast.error('Solicitação indeferida. O discente foi notificado sobre o motivo.');
+      }
+    }
+  };
   if (user.role === 'discente' && showNovaSolicitacao) {
     return (
       <div className="space-y-6">
@@ -731,18 +783,43 @@ export function GestaoSolicitacoes({ user }: GestaoSolicitacoesProps) {
                                 Reenviar
                               </button>
                             )}
-                            <button className="text-gray-600 hover:text-gray-700 text-sm">
+                            <button 
+                              onClick={() => onVerDetalhes?.(solicitacao)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs font-medium">
+                              <EyeIcon className="w-4 h-4" />
+                              Ver Detalhes
+                            </button>
+                          </div>
+                        ) : solicitacao.status === 'Pendente' ? (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleAprovarSolicitacao(solicitacao.id)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs font-medium">
+                              <CheckCircleIcon className="w-4 h-4" />
+                              Aprovar
+                            </button>
+                            <button
+                              onClick={() => handleIndeferirSolicitacao(solicitacao.id)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium">
+                              <XCircleIcon className="w-4 h-4" />
+                              Indeferir
+                            </button>
+                            <button 
+                              onClick={() => onVerDetalhes?.(solicitacao)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs font-medium">
+                              <EyeIcon className="w-4 h-4" />
                               Ver Detalhes
                             </button>
                           </div>
                         ) : (
                           <div className="flex gap-2">
-                            <button className="text-green-600 hover:text-green-700 text-sm">
-                              Aprovar
+                            <button 
+                              onClick={() => onVerDetalhes?.(solicitacao)}
+                              className="flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs font-medium">
+                              <EyeIcon className="w-4 h-4" />
+                              Ver Detalhes
                             </button>
-                            <button className="text-red-600 hover:text-red-700 text-sm">
-                              Indeferir
-                            </button>
+                            <span className="text-gray-400 text-sm">-</span>
                           </div>
                         )}
                       </td>
@@ -951,6 +1028,156 @@ export function GestaoSolicitacoes({ user }: GestaoSolicitacoesProps) {
           )}
         </div>
       )}
+
+      {/* Modal de Confirmação de Aprovação de Grupo */}
+      <AlertDialog open={modalAprovaGrupo} onOpenChange={setModalAprovaGrupo}>
+        <AlertDialogContent className="bg-white shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <CheckCircleIcon className="w-5 h-5 text-green-600" />
+              Confirmar Aprovação do Grupo
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Você tem certeza que deseja aprovar este grupo acadêmico? O docente responsável e o discente líder serão notificados sobre a aprovação.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex gap-3 justify-end pt-4">
+            <AlertDialogCancel className="border border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmarAprovacaoGrupo}
+              className="bg-green-600 text-white hover:bg-green-700"
+            >
+              Confirmar Aprovação
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modal de Rejeição de Grupo */}
+      <AlertDialog open={modalRejeicaoGrupo} onOpenChange={setModalRejeicaoGrupo}>
+        <AlertDialogContent className="bg-white shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <XCircleIcon className="w-5 h-5 text-red-600" />
+              Rejeitar Grupo Acadêmico
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Informe o motivo da rejeição. O docente responsável será notificado com os detalhes.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Motivo da Rejeição *
+              </label>
+              <textarea
+                value={motivoRejeicao}
+                onChange={(e) => setMotivoRejeicao(e.target.value)}
+                placeholder="Descreva os motivos pelos quais o grupo está sendo rejeitado..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                rows={4}
+              />
+              {!motivoRejeicao.trim() && (
+                <p className="text-red-600 text-xs mt-1">O motivo da rejeição é obrigatório</p>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-3 justify-end pt-4">
+            <AlertDialogCancel className="border border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmarRejeicaoGrupo}
+              disabled={!motivoRejeicao.trim()}
+              className={`text-white ${
+                motivoRejeicao.trim() 
+                  ? 'bg-red-600 hover:bg-red-700' 
+                  : 'bg-gray-400 cursor-not-allowed opacity-50'
+              }`}
+            >
+              Rejeitar Grupo
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modal de Confirmação de Aprovação de Solicitação */}
+      <AlertDialog open={modalAprovaSolicitacao} onOpenChange={setModalAprovaSolicitacao}>
+        <AlertDialogContent className="bg-white shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <CheckCircleIcon className="w-5 h-5 text-green-600" />
+              Confirmar Aprovação da Solicitação
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Você tem certeza que deseja aprovar esta solicitação de aproveitamento? O discente será notificado sobre a aprovação.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex gap-3 justify-end pt-4">
+            <AlertDialogCancel className="border border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmarAprovacaoSolicitacao}
+              className="bg-green-600 text-white hover:bg-green-700"
+            >
+              Confirmar Aprovação
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modal de Indeferimento de Solicitação */}
+      <AlertDialog open={modalIndeferimentoSolicitacao} onOpenChange={setModalIndeferimentoSolicitacao}>
+        <AlertDialogContent className="bg-white shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <XCircleIcon className="w-5 h-5 text-red-600" />
+              Indeferir Solicitação
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Informe o motivo do indeferimento. O discente será notificado com os detalhes.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Motivo do Indeferimento *
+              </label>
+              <textarea
+                value={motivoIndeferimento}
+                onChange={(e) => setMotivoIndeferimento(e.target.value)}
+                placeholder="Descreva os motivos pelos quais a solicitação está sendo indeferida..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                rows={4}
+              />
+              {!motivoIndeferimento.trim() && (
+                <p className="text-red-600 text-xs mt-1">O motivo do indeferimento é obrigatório</p>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-3 justify-end pt-4">
+            <AlertDialogCancel className="border border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmarIndeferimentoSolicitacao}
+              disabled={!motivoIndeferimento.trim()}
+              className={`text-white ${
+                motivoIndeferimento.trim() 
+                  ? 'bg-red-600 hover:bg-red-700' 
+                  : 'bg-gray-400 cursor-not-allowed opacity-50'
+              }`}
+            >
+              Indeferir Solicitação
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Toaster />
     </div>
   );
 }

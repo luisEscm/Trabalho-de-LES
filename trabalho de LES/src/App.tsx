@@ -14,6 +14,7 @@ import { PaginaOportunidadesPublica } from './components/PaginaOportunidadesPubl
 import { PaginaCertificadosPublica } from './components/PaginaCertificadosPublica';
 import { PaginaSobre } from './components/PaginaSobre';
 import { PaginaDetalhesOportunidadePublica } from './components/PaginaDetalhesOportunidadePublica';
+import { PaginaDetalhesSolicitacao } from './components/PaginaDetalhesSolicitacao';
 import { Toaster } from './components/ui/sonner';
 
 export type UserRole = 'discente' | 'coordenador' | 'docente' | 'admin';
@@ -40,6 +41,18 @@ interface OportunidadePublica {
   status: string;
 }
 
+interface Solicitacao {
+  id: number;
+  aluno: string;
+  atividade: string;
+  horasSolicitadas: number;
+  dataEnvio: string;
+  status: 'Pendente' | 'Aprovado' | 'Indeferido';
+  prazoRestante: number;
+  anexo: string;
+  parecer?: string;
+}
+
 // Interface para parâmetros de navegação
 interface NavigationParams {
   groupId?: number;
@@ -55,6 +68,39 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [visualizacaoMode, setVisualizacaoMode] = useState<VisualizacaoMode>('publica');
   const [oportunidadeSelecionada, setOportunidadeSelecionada] = useState<OportunidadePublica | null>(null);
+  const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<Solicitacao | null>(null);
+  const [solicitacoesCoordenacao, setSolicitacoesCoordenacao] = useState<Solicitacao[]>([
+    {
+      id: 1,
+      aluno: 'Pedro Oliveira',
+      atividade: 'Congresso Nacional de Medicina',
+      horasSolicitadas: 20,
+      dataEnvio: '29/11/2024',
+      status: 'Pendente',
+      prazoRestante: 2,
+      anexo: 'certificado.pdf'
+    },
+    {
+      id: 2,
+      aluno: 'Julia Santos',
+      atividade: 'Workshop de Tecnologia',
+      horasSolicitadas: 8,
+      dataEnvio: '26/11/2024',
+      status: 'Pendente',
+      prazoRestante: 5,
+      anexo: 'certificado.pdf'
+    },
+    {
+      id: 3,
+      aluno: 'Lucas Ferreira',
+      atividade: 'Simpósio de Extensão',
+      horasSolicitadas: 16,
+      dataEnvio: '30/11/2024',
+      status: 'Pendente',
+      prazoRestante: 1,
+      anexo: 'certificado.pdf'
+    }
+  ]);
   
   // Estado para notificações
   const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
@@ -170,6 +216,13 @@ export default function App() {
     }
   };
 
+  // Função para atualizar solicitação mantendo estado entre páginas
+  const handleAtualizarSolicitacao = (solicitacaoAtualizada: Solicitacao) => {
+    setSolicitacoesCoordenacao(prev =>
+      prev.map(s => s.id === solicitacaoAtualizada.id ? solicitacaoAtualizada : s)
+    );
+  };
+
   // Função de navegação avançada
   const handleNavigate = (view: string, params?: NavigationParams) => {
     setCurrentView(view);
@@ -275,6 +328,18 @@ export default function App() {
 
   // Renderizar área autenticada
   const renderView = () => {
+    // Se tem solicitação selecionada, mostrar página de detalhes
+    if (solicitacaoSelecionada) {
+      return (
+        <PaginaDetalhesSolicitacao
+          solicitacao={solicitacaoSelecionada}
+          onVoltar={() => setSolicitacaoSelecionada(null)}
+          userRole={user.role}
+          onAtualizarSolicitacao={handleAtualizarSolicitacao}
+        />
+      );
+    }
+
     switch (currentView) {
       case 'dashboard':
         if (user.role === 'discente') {
@@ -287,7 +352,12 @@ export default function App() {
       case 'oportunidades':
         return <PortalOportunidades user={user} />;
       case 'solicitacoes':
-        return <GestaoSolicitacoes user={user} />;
+        return <GestaoSolicitacoes 
+          user={user} 
+          solicitacoesCoordenacao={solicitacoesCoordenacao}
+          onAtualizarSolicitacao={handleAtualizarSolicitacao}
+          onVerDetalhes={setSolicitacaoSelecionada}
+        />;
       case 'certificados':
         return <Certificados user={user} />;
       case 'comunidade':

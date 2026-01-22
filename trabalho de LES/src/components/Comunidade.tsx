@@ -89,6 +89,29 @@ interface AtividadeGrupo {
 
 // --- MOCK DATABASE ---
 
+// Lista de cursos disponíveis
+const cursosDisponiveis = [
+  'Agronomia',
+  'Zootecnia',
+  'Engenharia',
+  'Biologia',
+  'Administração',
+  'Sistemas de Informação'
+];
+
+// Lista de períodos disponíveis
+const periodosDisponiveis = [
+  '1º Período',
+  '2º Período',
+  '3º Período',
+  '4º Período',
+  '5º Período',
+  '6º Período',
+  '7º Período',
+  '8º Período',
+  '9º Período'
+];
+
 // Lista de docentes cadastrados no sistema (para seleção)
 const docentesDisponiveis = [
   { id: 101, nome: 'Prof. Dr. Carlos Oliveira', matricula: 'DOC001', curso: 'Agronomia' },
@@ -198,6 +221,12 @@ export function Comunidade({ user, initialGroupId }: ComunidadeProps) {
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
   const [categoria, setCategoria] = useState<'geral' | 'oportunidades' | 'avisos' | 'eventos' | 'certificacao'>('geral');
+  
+  // Estados para filtros de segmentação múltipla
+  const [cursosFilterados, setCursosFilterados] = useState<string[]>([]);
+  const [periodosFilterados, setPeriodosFilterados] = useState<string[]>([]);
+  const [gruposFilterados, setGruposFilterados] = useState<string[]>([]);
+  const [cardExpandido, setCardExpandido] = useState<'periodos' | 'cursos' | 'grupos' | null>(null);
 
   // --- ESTADOS DE GESTÃO DO GRUPO (MODAL) ---
   const [grupoSelecionado, setGrupoSelecionado] = useState<Grupo | null>(null);
@@ -391,6 +420,20 @@ export function Comunidade({ user, initialGroupId }: ComunidadeProps) {
 
   const handleCriarComunicadoGeral = () => {
     if (!titulo.trim()) return toast.error('Preencha o título');
+    
+    // Se não houver filtros selecionados, é para todos
+    const temFiltros = periodosFilterados.length > 0 || cursosFilterados.length > 0 || gruposFilterados.length > 0;
+
+    let segmentacao: any = { tipo: 'todos' };
+    
+    // Se há filtros, criar segmentação personalizada
+    if (temFiltros) {
+      segmentacao = { tipo: 'personalizado' };
+      if (periodosFilterados.length > 0) segmentacao.semestres = periodosFilterados;
+      if (cursosFilterados.length > 0) segmentacao.cursos = cursosFilterados;
+      if (gruposFilterados.length > 0) segmentacao.grupos = gruposFilterados;
+    }
+
     setComunicados([{
       id: Date.now(),
       titulo,
@@ -399,9 +442,16 @@ export function Comunidade({ user, initialGroupId }: ComunidadeProps) {
       categoria,
       dataCriacao: new Date().toLocaleString('pt-BR'),
       fixado: false,
-      segmentacao: { tipo: 'todos' }
+      segmentacao
     }, ...comunicados]);
-    setMostrarFormulario(false); setTitulo(''); setConteudo('');
+    
+    setMostrarFormulario(false); 
+    setTitulo(''); 
+    setConteudo(''); 
+    setCursosFilterados([]);
+    setPeriodosFilterados([]);
+    setGruposFilterados([]);
+    setCardExpandido(null);
     toast.success('Comunicado publicado!');
   };
 
@@ -466,12 +516,181 @@ export function Comunidade({ user, initialGroupId }: ComunidadeProps) {
 
           {mostrarFormulario && (
             <Card className="p-6 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-4 text-lg">Novo Comunicado</h3>
+              <h3 className="font-bold text-gray-900 mb-6 text-lg">Novo Comunicado</h3>
               <div className="space-y-4">
                 <Input placeholder="Título" value={titulo} onChange={e => setTitulo(e.target.value)} className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500" />
                 <Textarea placeholder="Conteúdo" value={conteudo} onChange={e => setConteudo(e.target.value)} className="rounded-lg border-gray-300 focus:border-teal-500 focus:ring-teal-500" />
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setMostrarFormulario(false)} className="rounded-lg">Cancelar</Button>
+                
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold text-gray-900 mb-4">Segmentação (Opcional)</h4>
+                  <p className="text-sm text-gray-600 mb-4">Clique nos cards para selecionar quem receberá este comunicado:</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                    {/* Card Períodos */}
+                    <div 
+                      onClick={() => setCardExpandido(cardExpandido === 'periodos' ? null : 'periodos')}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        cardExpandido === 'periodos' 
+                          ? 'border-teal-500 bg-teal-50' 
+                          : 'border-gray-200 bg-gray-50 hover:border-teal-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h5 className="font-semibold text-gray-900">Períodos</h5>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {periodosFilterados.length === 0 
+                              ? 'Nenhum selecionado' 
+                              : `${periodosFilterados.length} selecionado${periodosFilterados.length !== 1 ? 's' : ''}`}
+                          </p>
+                        </div>
+                        <div className={`text-teal-600 transition-transform ${cardExpandido === 'periodos' ? 'rotate-180' : ''}`}>
+                          ▼
+                        </div>
+                      </div>
+                      
+                      {cardExpandido === 'periodos' && (
+                        <div className="mt-4 pt-4 border-t border-teal-200">
+                          <div className="grid grid-cols-2 gap-2">
+                            {periodosDisponiveis.map((periodo) => (
+                              <label key={periodo} className="flex items-center gap-2 cursor-pointer p-2 hover:bg-teal-100 rounded">
+                                <input 
+                                  type="checkbox" 
+                                  checked={periodosFilterados.includes(periodo)}
+                                  onChange={() => {
+                                    if (periodosFilterados.includes(periodo)) {
+                                      setPeriodosFilterados(periodosFilterados.filter(p => p !== periodo));
+                                    } else {
+                                      setPeriodosFilterados([...periodosFilterados, periodo]);
+                                    }
+                                  }}
+                                />
+                                <span className="text-sm text-gray-700">{periodo}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Cursos - DESATIVADO */}
+                    {/* 
+                    <div 
+                      onClick={() => setCardExpandido(cardExpandido === 'cursos' ? null : 'cursos')}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        cardExpandido === 'cursos' 
+                          ? 'border-teal-500 bg-teal-50' 
+                          : 'border-gray-200 bg-gray-50 hover:border-teal-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h5 className="font-semibold text-gray-900">Cursos</h5>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {cursosFilterados.length === 0 
+                              ? 'Nenhum selecionado' 
+                              : `${cursosFilterados.length} selecionado${cursosFilterados.length !== 1 ? 's' : ''}`}
+                          </p>
+                        </div>
+                        <div className={`text-teal-600 transition-transform ${cardExpandido === 'cursos' ? 'rotate-180' : ''}`}>
+                          ▼
+                        </div>
+                      </div>
+                      
+                      {cardExpandido === 'cursos' && (
+                        <div className="mt-4 pt-4 border-t border-teal-200">
+                          <div className="space-y-2">
+                            {cursosDisponiveis.map((curso) => (
+                              <label key={curso} className="flex items-center gap-2 cursor-pointer p-2 hover:bg-teal-100 rounded">
+                                <input 
+                                  type="checkbox" 
+                                  checked={cursosFilterados.includes(curso)}
+                                  onChange={() => {
+                                    if (cursosFilterados.includes(curso)) {
+                                      setCursosFilterados(cursosFilterados.filter(c => c !== curso));
+                                    } else {
+                                      setCursosFilterados([...cursosFilterados, curso]);
+                                    }
+                                  }}
+                                />
+                                <span className="text-sm text-gray-700">{curso}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    */}
+
+                    {/* Card Grupos Acadêmicos */}
+                    <div 
+                      onClick={() => setCardExpandido(cardExpandido === 'grupos' ? null : 'grupos')}
+                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        cardExpandido === 'grupos' 
+                          ? 'border-teal-500 bg-teal-50' 
+                          : 'border-gray-200 bg-gray-50 hover:border-teal-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h5 className="font-semibold text-gray-900">Grupos</h5>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {gruposFilterados.length === 0 
+                              ? 'Nenhum selecionado' 
+                              : `${gruposFilterados.length} selecionado${gruposFilterados.length !== 1 ? 's' : ''}`}
+                          </p>
+                        </div>
+                        <div className={`text-teal-600 transition-transform ${cardExpandido === 'grupos' ? 'rotate-180' : ''}`}>
+                          ▼
+                        </div>
+                      </div>
+                      
+                      {cardExpandido === 'grupos' && (
+                        <div className="mt-4 pt-4 border-t border-teal-200">
+                          <div className="space-y-2">
+                            {grupos.map((grupo) => (
+                              <label key={grupo.id} className="flex items-center gap-2 cursor-pointer p-2 hover:bg-teal-100 rounded">
+                                <input 
+                                  type="checkbox" 
+                                  checked={gruposFilterados.includes(grupo.nome)}
+                                  onChange={() => {
+                                    if (gruposFilterados.includes(grupo.nome)) {
+                                      setGruposFilterados(gruposFilterados.filter(g => g !== grupo.nome));
+                                    } else {
+                                      setGruposFilterados([...gruposFilterados, grupo.nome]);
+                                    }
+                                  }}
+                                />
+                                <span className="text-sm text-gray-700">{grupo.nome}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Resumo dos filtros selecionados */}
+                  {(periodosFilterados.length > 0 || cursosFilterados.length > 0 || gruposFilterados.length > 0) && (
+                    <div className="p-3 bg-teal-50 rounded-lg border border-teal-200 mb-4">
+                      <p className="text-sm font-semibold text-gray-900 mb-2">Filtros Selecionados:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {periodosFilterados.map(p => (
+                          <span key={p} className="px-2 py-1 bg-teal-200 text-teal-900 text-xs rounded">{p}</span>
+                        ))}
+                        {cursosFilterados.map(c => (
+                          <span key={c} className="px-2 py-1 bg-blue-200 text-blue-900 text-xs rounded">{c}</span>
+                        ))}
+                        {gruposFilterados.map(g => (
+                          <span key={g} className="px-2 py-1 bg-purple-200 text-purple-900 text-xs rounded">{g}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-2 border-t pt-4">
+                  <Button variant="outline" onClick={() => { setMostrarFormulario(false); setCursosFilterados([]); setPeriodosFilterados([]); setGruposFilterados([]); setCardExpandido(null); }} className="rounded-lg">Cancelar</Button>
                   <Button onClick={handleCriarComunicadoGeral} className="bg-teal-600 text-white rounded-lg hover:bg-teal-700">Publicar</Button>
                 </div>
               </div>
